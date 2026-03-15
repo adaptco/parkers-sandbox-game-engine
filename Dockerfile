@@ -1,4 +1,4 @@
-# ── Build stage ──────────────────────────────────────────────
+# -- Build stage --
 FROM python:3.11-slim AS builder
 
 WORKDIR /build
@@ -9,13 +9,17 @@ RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-# ── Runtime stage ────────────────────────────────────────────
+# -- Runtime stage --
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="parkers-sandbox-game-engine"
 LABEL org.opencontainers.image.description="Game Model API and ADK endpoint"
+LABEL org.opencontainers.image.version="1.0.0"
 
 WORKDIR /app
+
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 
 # Patch vulnerabilities
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
@@ -23,7 +27,9 @@ RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
-COPY . .
+COPY --chown=appuser:appuser . .
+
+USER appuser
 
 EXPOSE 8200
 

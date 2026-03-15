@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "docker-build",
+            "command": "docker build --pull -t ghostvoid:latest -f ${workspaceFolder}/Dockerfile ${workspaceFolder}",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build"
+            ],
+            "command": "docker compose -f ${workspaceFolder}/compose.debug.yaml up",
+            "group": "none",
+            "problemMatcher": []
+        }
+    ]
+}
