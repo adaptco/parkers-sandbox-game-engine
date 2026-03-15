@@ -1,0 +1,28 @@
+# Production Docker Compose
+# Deploy with: docker compose -f docker-compose.prod.yml up -d
+
+version: '3.8'
+
+services:
+  web:
+    image: ghcr.io/${{ REGISTRY_USERNAME }}/parkers-sandbox-game-engine:latest
+    container_name: sandbox-game-engine-prod
+    ports:
+      - "8200:8200"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8200/engine/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    security_opt:
+      - no-new-privileges:true
