@@ -24,7 +24,7 @@ jobs:
                   pip install pytest httpx ruff
 
             - name: Lint with ruff
-              run: ruff check main.py || echo "Linting warnings (non-blocking)"
+              run: ruff check .
 
             - name: Validate FastAPI syntax
               run: python -m py_compile main.py
